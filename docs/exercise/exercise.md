@@ -2,10 +2,11 @@
 
 ## Commit Proposal
 
-Matriculation Number: <to be filled by student>
+Matriculation Number: 16-967-432
 
 Project idea short description: 
-
+A doodle like bring list where people can enter their items.
+Including an overview who brings what and an admin panel.
 
 ## Project confirmation
 
