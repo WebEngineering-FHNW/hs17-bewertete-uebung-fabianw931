@@ -10,8 +10,10 @@ Including an overview who brings what and an admin panel.
 
 ## Project confirmation
 
-< to be filled by lecturer>
+confirmed.
 
+Cool idea.
+Go for it!
 
 ## Project delivery <to be filled by student>
 
