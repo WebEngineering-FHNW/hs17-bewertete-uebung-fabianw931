@@ -27,5 +27,4 @@ class BookingController {
 	
 	    render text: result.toString()
     }
-
 }
