@@ -1,10 +1,12 @@
 package mvc
 
 class BringList {
-    final String name
-    final String owner
+    String name
+    String owner
+    int listId
 
-    List<BringListItem> items;
+    List<BringListItem> items = new ArrayList<>()
+
     static constraints = {
     }
 }

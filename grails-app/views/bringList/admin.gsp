@@ -2,14 +2,18 @@
 <html>
 <head>
     <title>
-        Average
+        Bring it!
     </title>
 </head>
 <body>
 
-<p> Your average is <output>placeholder goes here</output>.</p>
+<div class="topnav" id="myTopnav">
+    <a class="active" href="/bringList/index">Home</a>
+    <a class="active" href="/bringList/admin">Admin</a>
+</div>
 
-<p> Back to the <a href="/static/GradeCalculator.html">calculator</a>.</p>
+<div class="table">
 
+</div>
 </body>
 </html>

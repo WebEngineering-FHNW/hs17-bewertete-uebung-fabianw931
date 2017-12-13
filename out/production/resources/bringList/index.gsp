@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <g:javascript library='jquery' />
     <meta name="layout" content="main"/>
     <title>
         Bring it!
@@ -11,18 +10,6 @@
 
 <h2>Bring it!</h2>
 
-
-<g:javascript>
-  function go(id){
-    console.log(id)
-    $.ajax({
-      url:'${g.createLink( controller:'bringList', action:'list', params:[id: id])}',
-      data:{ id:id }
-    });
-  }
-</g:javascript>
-
-
 <div class="table centered ">
     <ul id="horizontal-list">
     <table class="table">
@@ -30,19 +17,12 @@
             <tr>
                 <th class="sortable">Listenname</th>
                 <th class="sortable">Ersteller</th>
-                <th class="sortable"></th>
             </tr>
         </thead>
         <g:each in="${bList}">
-            <tr>
+            <tr onclick="<g:remoteFunction action="list" id="${it.id}"/>">
                 <td>${it.name}</td>
                 <td>${it.owner}</td>
-                <td><g:form controller="bringList" action="list">
-                    <input type="submit" name="submit" value="Öffnen">
-                    <input type="hidden" name="id" value="${it.listId}">
-                </g:form>
-                </td>
-
             </tr>
         </g:each>
     </table>
