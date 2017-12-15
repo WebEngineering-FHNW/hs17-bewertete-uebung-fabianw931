@@ -57,7 +57,6 @@
         <input type="submit" name="submit" value="Neue Liste"/>
     </g:form>
 
-
 </div>
 </body>
 </html>

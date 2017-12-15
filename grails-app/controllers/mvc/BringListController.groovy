@@ -1,5 +1,9 @@
 package mvc
 
+import java.security.MessageDigest
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+
 class BringListController {
 
     def index() {
@@ -16,8 +20,18 @@ class BringListController {
         bl.name = name
         bl.owner = owner
         bl.listId = id
+
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date today = Calendar.getInstance().getTime();
+        String reportDate = df.format(today);
+
+        MessageDigest m = MessageDigest.getInstance("MD5");
+        m.update(reportDate.getBytes(),0,reportDate.length());
+        int hash = reportDate.hashCode().abs()
+        bl.admin = hash
+
         bl.save(flush: true, failOnError: true)
-        redirect (action:"list", params: [id: id])
+        redirect (action:"list", params: [id: id, admin: true, hash: hash])
     }
 
     def add(){
@@ -26,8 +40,9 @@ class BringListController {
         int id = Integer.parseInt(params.get('list'))
         BringList bl = BringList.all.get(id)
         BringListItem item = new BringListItem()
-        item.name = name
         ArrayList<BringListItem> itemList= bl.items;
+        item.name = name
+        item.itemId = itemList.size()
         itemList.add(item)
         bl.items = itemList
         bl.save(flush: true)
@@ -38,8 +53,42 @@ class BringListController {
 
     }
 
+    def editList(){
+        int id = Integer.parseInt(params.get('list'))
+        BringList bl = BringList.all.get(id)
+        def items = request.getParameterValues('item')
+        String bringer = params.get('bringer')
+
+
+        ArrayList<BringListItem> itemArray= bl.items
+
+        for(String stringId : items){
+            int intId = Integer.parseInt(stringId.replaceAll("\\D+",""))
+            if(stringId.contains("true")){ // neu checked als true
+                itemArray.get(intId).checked = true
+                itemArray.get(intId).bringer = bringer
+
+            }else{
+                itemArray.get(intId).checked = false
+                itemArray.get(intId).bringer = ""
+            }
+        }
+
+        bl.items = itemArray
+        bl.save(flush: true)
+        redirect (action:"list", params: [id: id])
+    }
+
     def list(){
         int id = Integer.parseInt(params.get('id'))
+
+        if(params.get('admin')){
+
+            render (view:"list", model: [bList: BringList.all.get(id), admin: true, hash: params.get('hash')])
+        }
+
         render (view:"list", model: [bList: BringList.all.get(id)])
     }
+
+
 }
