@@ -53,8 +53,9 @@ class BringListController {
         int admintoken = Integer.parseInt(params.get('adminToken'))
         int id = Integer.parseInt(params.get('id'))
         BringList a = BringList.all.get(id)
+
         if (admintoken == a.admintoken){
-            render (view:"list", model: [admin: true, token: admintoken, bList: a])
+            render (view:"list", model: [admin: true, adminmode: true, bList: a])
         }else{
 
         }
@@ -70,14 +71,14 @@ class BringListController {
         ArrayList<BringListItem> itemArray= bl.items
 
         for(String stringId : items){
-            int intId = Integer.parseInt(stringId.replaceAll("\\D+",""))
+            int itemId = Integer.parseInt(stringId.replaceAll("\\D+",""))
             if(stringId.contains("true")){ // neu checked als true
-                itemArray.get(intId).checked = true
-                itemArray.get(intId).bringer = bringer
+                itemArray.get(itemId).checked = true
+                itemArray.get(itemId).bringer = bringer
 
             }else{
-                itemArray.get(intId).checked = false
-                itemArray.get(intId).bringer = ""
+                itemArray.get(itemId).checked = false
+                itemArray.get(itemId).bringer = ""
             }
         }
 
@@ -96,11 +97,28 @@ class BringListController {
         if(params.get('admintoken')){
             BringList a = BringList.all.get(id)
             int admintoken = a.admintoken
-            render (view:"list", model: [admin: true, token: admintoken, bList: a])
+            render (view:"list", model: [admin: true,adminmode: false, token: admintoken, bList: a])
         }else{
             render (view:"list", model: [bList: BringList.all.get(id)])
         }
     }
 
+    def remove(){
+        int id = Integer.parseInt(params.get('id'))
+        BringList bl = BringList.all.get(id)
+        def items = request.getParameterValues('item')
 
+        ArrayList<BringListItem> itemArray= bl.items
+
+        for(String stringId : items){
+            int itemId = Integer.parseInt(stringId.replaceAll("\\D+",""))
+            if(stringId.contains("false")){
+                itemArray.remove(itemId)
+            }
+        }
+
+        bl.items = itemArray
+        bl.save(flush: true)
+        redirect (action:"list", params: [id: id], admintoken: "true")
+    }
 }

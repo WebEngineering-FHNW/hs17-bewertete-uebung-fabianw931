@@ -52,14 +52,24 @@
             <g:each in="${bList.items}">
                 <li>
                     <g:if test="${it.checked == true}">
-                        <g:checkBox name="item" value="${it.itemId}-false" disabled="true" checked="true"/>
+                        <g:if test="${adminmode}">
+                            <g:checkBox name="item" value="${it.itemId}-false" disabled="false" checked="true"/>
+                        </g:if>
+                        <g:else>
+                            <g:checkBox name="item" value="${it.itemId}-false" disabled="true" checked="true"/>
+                        </g:else>
                     </g:if>
                     <g:else>
                         <g:checkBox name="item" value="${it.itemId}-true" checked="false"/>
                     </g:else>
                     <td>${it.name}</td>
                     <td>${it.bringer}</td>
-                    <g:if test="${admin}"></g:if>
+                    <g:if test="${adminmode}">
+                        <g:form controller="bringList" action="remove">
+                            <input type="submit" name="remove" value="Remove"/>
+                            <input type="hidden" name="id" value="${bList.listId}"/>
+                        </g:form>
+                    </g:if>
                 </li>
             </g:each>
             <g:if test="${bList.items.size() > 0}">
