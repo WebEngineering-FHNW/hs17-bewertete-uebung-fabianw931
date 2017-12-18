@@ -1,6 +1,8 @@
 <!doctype html>
 <html>
 <head>
+    <g:javascript library='jquery' />
+    <meta name="layout" content="main"/>
     <title>
         Bring it!
     </title>
@@ -8,69 +10,40 @@
 <body>
 
 
-<button id="myBtn">Open Modal</button>
-
-<!-- The Modal -->
-<div id="myModal" class="modal">
-
-    <!-- Modal content -->
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p>Some text in the Modal..</p>
-    </div>
-
-</div>
-
-<g:if test="${admin == 'true'}">
-
-    <button id="myBtn">Open Modal</button>
-
-    <!-- The Modal -->
-    <div id="myModal" class="modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
+<div>
+    <g:if test="${token == bList.admintoken}">
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p>To access the admin page in the future save this password.</p>
+                <p>Password: ${token}</p>
+            </div>
         </div>
 
-    </div>
-    <script>
-        // Get the modal
-        var modal = document.getElementById('myModal');
-
-        // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // When the user clicks on the button, open the modal
-        btn.onclick = function() {
+        <script>
+            // Get the modal
+            var modal = document.getElementById('myModal');
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
             modal.style.display = "block";
-        }
-
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-            if (event.target == modal) {
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
                 modal.style.display = "none";
             }
-        }
-    </script>
-    <input type="submit" name="save" value="List"/>
-    <input type="hidden" name="id" value="${bList.listId}"/>
-
-</g:if>
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
+    </g:if>
+</div>
 
 <div class="topnav" id="myTopnav">
     <a class="active" href="/bringList/index">Home</a>
-    <a class="active" href="/bringList/admin">Admin</a>
 </div>
+
 <div class="table">
     <ul id="horizontal-list">
         <g:form controller="bringList" action="editList">
@@ -86,10 +59,14 @@
                     </g:else>
                     <td>${it.name}</td>
                     <td>${it.bringer}</td>
+                    <g:if test="${admin}"></g:if>
                 </li>
             </g:each>
             <g:if test="${bList.items.size() > 0}">
-                <input type="text" name="bringer" placeholder="Bringer"/>
+                <g:if test="${admin}">
+                    <input type="hidden" name="admintoken"/>
+                </g:if>
+                <input type="text" name="bringer" placeholder="Bringer" required/>
                 <input type="submit" name="save" value="Speichern"/>
             </g:if>
         </g:form>
@@ -102,41 +79,20 @@
         <input type="text" name="name" placeholder="Item"/>
         <input type="submit" name="submit" value="Neues Item"/>
     </g:form>
-
-    Share this link: <a href="http://localhost:8080/bringList/list/${bList.listId}">
-                        http://localhost:8080/bringList/list/${bList.listId}
-                     </a>
+    <div>
+        Share this link: <a href="http://localhost:8080/bringList/list/${bList.listId}">
+        http://localhost:8080/bringList/list/${bList.listId}
+    </a>
+    </div>
+    <div>
+        Adminlogin
+        <g:form controller="bringList" action="admin">
+            <input type="password" name="adminToken" value="" placeholder="Password"/>
+            <input type="submit" name="adminLogin" value="Login"/>
+            <input type="hidden" name="id" value="${bList.listId}"/>
+        </g:form>
+    </div>
 
 </div>
 </body>
-
 </html>
-
-
-<script>
-    // Get the modal
-    var modal = document.getElementById('myModal');
-
-    // Get the button that opens the modal
-    var btn = document.getElementById("myBtn");
-
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks on the button, open the modal
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-</script>

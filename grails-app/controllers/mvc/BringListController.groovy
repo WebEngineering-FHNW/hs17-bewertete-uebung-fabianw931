@@ -24,14 +24,14 @@ class BringListController {
         DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         Date today = Calendar.getInstance().getTime();
         String reportDate = df.format(today);
-
         MessageDigest m = MessageDigest.getInstance("MD5");
         m.update(reportDate.getBytes(),0,reportDate.length());
         int hash = reportDate.hashCode().abs()
-        bl.admin = hash
+
+        bl.admintoken = hash
 
         bl.save(flush: true, failOnError: true)
-        redirect (action:"list", params: [id: id, admin: true, hash: hash])
+        redirect (action:"list", params: [id: id, admintoken: true, hash: hash])
     }
 
     def add(){
@@ -50,7 +50,14 @@ class BringListController {
     }
 
     def admin(){
+        int admintoken = Integer.parseInt(params.get('adminToken'))
+        int id = Integer.parseInt(params.get('id'))
+        BringList a = BringList.all.get(id)
+        if (admintoken == a.admintoken){
+            render (view:"list", model: [admin: true, token: admintoken, bList: a])
+        }else{
 
+        }
     }
 
     def editList(){
@@ -76,18 +83,23 @@ class BringListController {
 
         bl.items = itemArray
         bl.save(flush: true)
-        redirect (action:"list", params: [id: id])
+        if(params.get('admintoken')){
+            redirect (action:"list", params: [id: id], admintoken: "true")
+        }else{
+            redirect (action:"list", params: [id: id])
+        }
     }
 
     def list(){
         int id = Integer.parseInt(params.get('id'))
 
-        if(params.get('admin')){
-
-            render (view:"list", model: [bList: BringList.all.get(id), admin: true, hash: params.get('hash')])
+        if(params.get('admintoken')){
+            BringList a = BringList.all.get(id)
+            int admintoken = a.admintoken
+            render (view:"list", model: [admin: true, token: admintoken, bList: a])
+        }else{
+            render (view:"list", model: [bList: BringList.all.get(id)])
         }
-
-        render (view:"list", model: [bList: BringList.all.get(id)])
     }
 
 

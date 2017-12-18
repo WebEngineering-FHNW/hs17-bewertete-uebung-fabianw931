@@ -4,7 +4,7 @@ class BringList {
     String name
     String owner
     int listId
-    int admin
+    int admintoken
 
     List<BringListItem> items = new ArrayList<>()
 
