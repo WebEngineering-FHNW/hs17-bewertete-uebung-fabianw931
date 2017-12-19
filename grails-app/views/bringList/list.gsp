@@ -10,7 +10,8 @@
 <body>
 
 
-<div>
+<div class="centered">
+    <div>
     <g:if test="${token == bList.admintoken}">
         <div id="myModal" class="modal">
             <div class="modal-content">
@@ -104,5 +105,7 @@
     </div>
 
 </div>
+</div>
+
 </body>
 </html>

@@ -6,12 +6,22 @@ import java.text.SimpleDateFormat
 
 class BringListController {
 
+    /**
+     * renders index view which includes a list of all BringLists
+     *
+     * @return index view
+     */
     def index() {
         println BringList.count
         if(BringList.all.empty) render view: "index"
         render (view: "index", model: [bList: BringList.all])
     }
 
+    /**
+     *returns and redirects to a newly created empty BringList
+     *
+     * @return new BringList
+     */
     def create(){
         String name = params.get('name')
         String owner = params.get('owner')
@@ -34,6 +44,11 @@ class BringListController {
         redirect (action:"list", params: [id: id, admintoken: true, hash: hash])
     }
 
+    /**
+     * adds a BringListItem to an existing BringList
+     *
+     * @return BringList with new item
+     */
     def add(){
         String name = params.get('name')
         println "id " + params.get('list').class
@@ -49,6 +64,11 @@ class BringListController {
         redirect (action:"list", params: [id: id])
     }
 
+    /**
+     * checks if admintoken is correct and redirects to the corresponding admin site of the list
+     *
+     * @return access to the admin part of the list
+     */
     def admin(){
         int admintoken = Integer.parseInt(params.get('adminToken'))
         int id = Integer.parseInt(params.get('id'))
@@ -61,36 +81,68 @@ class BringListController {
         }
     }
 
+    /**
+     * adds or removes selected items from an existing BringList
+     *
+     * @return edited BringList
+     */
     def editList(){
-        int id = Integer.parseInt(params.get('list'))
-        BringList bl = BringList.all.get(id)
-        def items = request.getParameterValues('item')
-        String bringer = params.get('bringer')
 
+        if(params.get('remove')){
+            println "removing stuff"
+            int id = Integer.parseInt(params.get('id'))
+            BringList bl = BringList.all.get(id)
+            def items = request.getParameterValues('item')
 
-        ArrayList<BringListItem> itemArray= bl.items
+            ArrayList<BringListItem> itemArray= bl.items
 
-        for(String stringId : items){
-            int itemId = Integer.parseInt(stringId.replaceAll("\\D+",""))
-            if(stringId.contains("true")){ // neu checked als true
-                itemArray.get(itemId).checked = true
-                itemArray.get(itemId).bringer = bringer
-
-            }else{
-                itemArray.get(itemId).checked = false
-                itemArray.get(itemId).bringer = ""
+            for(String stringId : items){
+                int itemId = Integer.parseInt(stringId.replaceAll("\\D+",""))
+                if(stringId.contains("false")){
+                    itemArray.remove(itemId)
+                }
             }
-        }
 
-        bl.items = itemArray
-        bl.save(flush: true)
-        if(params.get('admintoken')){
+            bl.items = itemArray
+            bl.save(flush: true)
             redirect (action:"list", params: [id: id], admintoken: "true")
         }else{
-            redirect (action:"list", params: [id: id])
+            int id = Integer.parseInt(params.get('list'))
+            BringList bl = BringList.all.get(id)
+            def items = request.getParameterValues('item')
+            String bringer = params.get('bringer')
+
+
+            ArrayList<BringListItem> itemArray= bl.items
+
+            for(String stringId : items){
+                int itemId = Integer.parseInt(stringId.replaceAll("\\D+",""))
+                if(stringId.contains("true")){ // neu checked als true
+                    itemArray.get(itemId).checked = true
+                    itemArray.get(itemId).bringer = bringer
+
+                }else{
+                    itemArray.get(itemId).checked = false
+                    itemArray.get(itemId).bringer = ""
+                }
+            }
+
+            bl.items = itemArray
+            bl.save(flush: true)
+            if(params.get('admintoken')){
+                redirect (action:"list", params: [id: id], admintoken: "true")
+            }else{
+                redirect (action:"list", params: [id: id])
+            }
+
         }
     }
 
+    /**
+     * used to redirect to different BringLists
+     *
+     * @return view to an existing BringList
+     */
     def list(){
         int id = Integer.parseInt(params.get('id'))
 
@@ -103,6 +155,11 @@ class BringListController {
         }
     }
 
+    /**
+     * removes items from BringList
+     *
+     * @return edited BringList
+     */
     def remove(){
         int id = Integer.parseInt(params.get('id'))
         BringList bl = BringList.all.get(id)
