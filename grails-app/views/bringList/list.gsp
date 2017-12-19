@@ -22,6 +22,7 @@
         </div>
 
         <script>
+            // script is from w3schools
             // Get the modal
             var modal = document.getElementById('myModal');
             // Get the <span> element that closes the modal
@@ -50,33 +51,52 @@
         <g:form controller="bringList" action="editList">
             <input type="hidden" name="list" value="${bList.listId}" />
 
-            <g:each in="${bList.items}">
-                <li>
-                    <g:if test="${it.checked == true}">
-                        <g:if test="${adminmode}">
-                            <g:checkBox name="item" value="${it.itemId}-false" disabled="false" checked="true"/>
-                        </g:if>
-                        <g:else>
-                            <g:checkBox name="item" value="${it.itemId}-false" disabled="true" checked="true"/>
-                        </g:else>
-                    </g:if>
-                    <g:else>
-                        <g:checkBox name="item" value="${it.itemId}-true" checked="false"/>
-                    </g:else>
-                    <td>${it.name}</td>
-                    <td>${it.bringer}</td>
+            <table>
+                <thead>
+                <tr>
+                    <th class="sortable">Check it!</th>
+                    <th class="sortable">Item</th>
+                    <th class="sortable">Bringer</th>
                     <g:if test="${adminmode}">
-                        <g:form controller="bringList" action="remove">
-                            <input type="submit" name="remove" value="Remove"/>
-                            <input type="hidden" name="id" value="${bList.listId}"/>
-                        </g:form>
+                        <th>
+                            Remove it!
+                        </th>
                     </g:if>
-                </li>
-            </g:each>
+                </tr>
+                </thead>
+                <g:each in="${bList.items}">
+                    <tr>
+                        <td><g:if test="${it.checked == true}">
+                            <g:if test="${adminmode}">
+                                <g:checkBox name="item" value="${it.itemId}-false" disabled="false" checked="true"/>
+                            </g:if>
+                            <g:else>
+                                <g:checkBox name="item" value="${it.itemId}-false" disabled="true" checked="true"/>
+                            </g:else>
+                        </g:if>
+                            <g:else>
+                                <g:checkBox name="item" value="${it.itemId}-true" checked="false"/>
+                            </g:else>
+                        </td>
+                        <td>${it.name}</td>
+                        <td>${it.bringer}</td>
+                        <g:if test="${adminmode}">
+                            <td>
+                                <g:form controller="bringList" action="remove">
+                                    <g:link action="remove" controller="bringList" params="[itemId:it.itemId, listId:bList.listId]">Remove</g:link>
+                                </g:form>
+                            </td>
+                        </g:if>
+                    </tr>
+                </g:each>
+            </table>
+
+
             <g:if test="${bList.items.size() > 0}">
                 <g:if test="${admin}">
                     <input type="hidden" name="admintoken"/>
                 </g:if>
+                Check items you want to bring and save it!
                 <input type="text" name="bringer" placeholder="Bringer" required/>
                 <input type="submit" name="save" value="Speichern"/>
             </g:if>
@@ -85,7 +105,11 @@
 
     </ul>
 
+    <br/>
+
     <g:form controller="bringList" action="add">
+        Add new items someone has to bring!
+
         <input type="hidden" name="list" value="${bList.listId}" />
         <input type="text" name="name" placeholder="Item"/>
         <input type="submit" name="submit" value="Neues Item"/>

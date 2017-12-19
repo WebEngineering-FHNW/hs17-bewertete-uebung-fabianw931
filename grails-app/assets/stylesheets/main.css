@@ -573,6 +573,12 @@ img.grails-logo {
     margin-top:-10px;
 }
 
+.table {
+    max-width: 60%;
+    display: block;
+    margin: 0 auto;
+}
+
 /* Add a black background color to the top navigation */
 .topnav {
     background-color: #333;

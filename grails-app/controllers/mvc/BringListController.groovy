@@ -12,7 +12,6 @@ class BringListController {
      * @return index view
      */
     def index() {
-        println BringList.count
         if(BringList.all.empty) render view: "index"
         render (view: "index", model: [bList: BringList.all])
     }
@@ -51,7 +50,6 @@ class BringListController {
      */
     def add(){
         String name = params.get('name')
-        println "id " + params.get('list').class
         int id = Integer.parseInt(params.get('list'))
         BringList bl = BringList.all.get(id)
         BringListItem item = new BringListItem()
@@ -65,48 +63,11 @@ class BringListController {
     }
 
     /**
-     * checks if admintoken is correct and redirects to the corresponding admin site of the list
-     *
-     * @return access to the admin part of the list
-     */
-    def admin(){
-        int admintoken = Integer.parseInt(params.get('adminToken'))
-        int id = Integer.parseInt(params.get('id'))
-        BringList a = BringList.all.get(id)
-
-        if (admintoken == a.admintoken){
-            render (view:"list", model: [admin: true, adminmode: true, bList: a])
-        }else{
-
-        }
-    }
-
-    /**
-     * adds or removes selected items from an existing BringList
+     * edits selected items from an existing BringList
      *
      * @return edited BringList
      */
     def editList(){
-
-        if(params.get('remove')){
-            println "removing stuff"
-            int id = Integer.parseInt(params.get('id'))
-            BringList bl = BringList.all.get(id)
-            def items = request.getParameterValues('item')
-
-            ArrayList<BringListItem> itemArray= bl.items
-
-            for(String stringId : items){
-                int itemId = Integer.parseInt(stringId.replaceAll("\\D+",""))
-                if(stringId.contains("false")){
-                    itemArray.remove(itemId)
-                }
-            }
-
-            bl.items = itemArray
-            bl.save(flush: true)
-            redirect (action:"list", params: [id: id], admintoken: "true")
-        }else{
             int id = Integer.parseInt(params.get('list'))
             BringList bl = BringList.all.get(id)
             def items = request.getParameterValues('item')
@@ -117,25 +78,29 @@ class BringListController {
 
             for(String stringId : items){
                 int itemId = Integer.parseInt(stringId.replaceAll("\\D+",""))
+
+                BringListItem item
+                for(BringListItem bli : itemArray){
+                    if (bli.itemId == itemId) item = bli
+                }
+
                 if(stringId.contains("true")){ // neu checked als true
-                    itemArray.get(itemId).checked = true
-                    itemArray.get(itemId).bringer = bringer
+                    item.checked = true
+                    item.bringer = bringer
 
                 }else{
-                    itemArray.get(itemId).checked = false
-                    itemArray.get(itemId).bringer = ""
+                    item.checked = false
+                    item.bringer = ""
                 }
             }
 
             bl.items = itemArray
             bl.save(flush: true)
             if(params.get('admintoken')){
-                redirect (action:"list", params: [id: id], admintoken: "true")
+                redirect (action:"admin", params: [id: id], admintoken: params.get('admintoken'))
             }else{
                 redirect (action:"list", params: [id: id])
             }
-
-        }
     }
 
     /**
@@ -149,9 +114,31 @@ class BringListController {
         if(params.get('admintoken')){
             BringList a = BringList.all.get(id)
             int admintoken = a.admintoken
-            render (view:"list", model: [admin: true,adminmode: false, token: admintoken, bList: a])
+            render (view:"list", model: [admin: true, adminmode: true, token: admintoken, bList: a])
         }else{
             render (view:"list", model: [bList: BringList.all.get(id)])
+        }
+    }
+
+    /**
+     * checks if admintoken is correct and redirects to the corresponding admin site of the list
+     *
+     * @return access to the admin part of the list
+     */
+    def admin(){
+        int id = Integer.parseInt(params.get('id'))
+        BringList a = BringList.all.get(id)
+        if (params.get('adminToken')){
+            int admintoken = Integer.parseInt(params.get('adminToken'))
+
+            if (admintoken == a.admintoken){
+                render (view:"list", model: [admin: true, adminmode: true, bList: a])
+            }else{
+                render (view:"list", model: [bList: a])
+            }
+        }
+        else{
+            render (view:"list", model: [bList: a])
         }
     }
 
@@ -161,21 +148,21 @@ class BringListController {
      * @return edited BringList
      */
     def remove(){
-        int id = Integer.parseInt(params.get('id'))
-        BringList bl = BringList.all.get(id)
-        def items = request.getParameterValues('item')
+        int listId = Integer.parseInt(params.get('listId'))
+        int itemId = Integer.parseInt(params.get('itemId'))
+        BringList bl = BringList.all.get(listId)
 
         ArrayList<BringListItem> itemArray= bl.items
+        BringListItem item
 
-        for(String stringId : items){
-            int itemId = Integer.parseInt(stringId.replaceAll("\\D+",""))
-            if(stringId.contains("false")){
-                itemArray.remove(itemId)
+        for (int i = 0; i < itemArray.size; i++) {
+            if (itemArray.get(i).itemId == itemId){
+                itemArray.remove(i)
             }
         }
 
         bl.items = itemArray
         bl.save(flush: true)
-        redirect (action:"list", params: [id: id], admintoken: "true")
+        redirect (action:"admin", params: [id: bl.id-1, adminToken: bl.admintoken])
     }
 }

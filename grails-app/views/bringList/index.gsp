@@ -9,7 +9,13 @@
 </head>
 </br>
 
-<h2>Bring it!</h2>
+<h2>
+    <i class="fa grails-icon">
+    <asset:image src="126515.svg"/>
+    </i>
+    Bring it!
+</h2>
+
 
 
 <g:javascript>
@@ -25,7 +31,7 @@
 
 <div class="table centered ">
     <ul id="horizontal-list">
-    <table class="table">
+    <table>
         <thead>
             <tr>
                 <th class="sortable">Listenname</th>
